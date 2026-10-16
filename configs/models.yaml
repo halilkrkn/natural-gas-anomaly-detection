@@ -1,0 +1,54 @@
+# Phase 1.5.9 starting candidates. Provisional values are not final until pilot evidence is recorded.
+score_contract:
+  higher_means_more_anomalous: true
+  thresholds_calibrated_externally_on_validation: true
+
+classical:
+  isolation_forest:
+    n_estimators: 100
+    max_samples: auto
+    max_features: 1.0
+    bootstrap: false
+    contamination: auto # internal sklearn boundary is NOT the project threshold
+    development_random_state: 42
+    score_transform: negate_score_samples
+    status: literature_and_library_default_baseline
+  one_class_svm:
+    kernel: rbf
+    nu: 0.1 # cross-domain pilot candidate only; not gas-pipeline literature evidence, PROVISIONAL
+    gamma: scale
+    tol: 0.001
+    max_iter: -1
+    score_transform: negate_score_samples
+    status: provisional
+  local_outlier_factor:
+    n_neighbors: 20
+    novelty: true # required for scoring unseen validation/test windows
+    metric: minkowski
+    p: 2
+    contamination: auto # internal sklearn boundary is NOT the project threshold
+    score_transform: negate_score_samples
+    status: library_default_baseline
+
+deep_learning:
+  shared_autoencoder:
+    encoder_layers: 1
+    decoder_layers: 1
+    hidden_size: 32 # provisional transferred candidate per accepted v1.1; not a gas-pipeline optimum
+    decoder_context: repeat_final_encoder_state_over_window
+    output_projection: linear_to_input_channels
+    reconstruction_loss: mean_squared_error
+    optimizer: Adam
+    learning_rate: 0.001 # PyTorch Adam default; not claimed universally optimal
+    batch_size: 128 # provisional literature-transfer candidate; feasibility checked in Colab
+    max_epochs: 100 # provisional literature-transfer ceiling, not a fixed target
+    early_stopping_monitor: normal_validation_reconstruction_mse
+    early_stopping_patience: 10 # provisional literature-transfer candidate; validation-loss based
+    dropout: 0.0 # one recurrent layer; no recurrent inter-layer dropout
+    weight_decay: 0.0
+    development_seed: 42
+  lstm_autoencoder:
+    cell: LSTM
+  gru_autoencoder:
+    cell: GRU
+  status: provisional_until_pilot

@@ -1,0 +1,54 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*token*
+*secret*
+
+# Python/build/test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# Notebook local state
+.ipynb_checkpoints/
+
+# Raw, processed, and generated data: keep only placeholders in Git
+/data/raw/*
+!/data/raw/.gitkeep
+/data/processed/*
+!/data/processed/.gitkeep
+/data/synthetic/*
+!/data/synthetic/.gitkeep
+
+# Runtime outputs / large binary model artifacts
+/experiments/results/*
+!/experiments/results/.gitkeep
+/checkpoints/
+/logs/
+*.pt
+*.pth
+*.ckpt
+*.joblib
+*.pkl
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Local Antigravity/MCP configuration (may contain auth headers)
+.agents/mcp_config.json
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Local environment and agent scratch state
+.venv/
+venv/
+.envrc
+.DS_Store

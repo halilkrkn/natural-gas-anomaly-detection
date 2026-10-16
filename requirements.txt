@@ -1,0 +1,12 @@
+# Bootstrap dependency list only; do not treat this as the final reproducibility lockfile.
+# Record actual Colab-tested versions in phase3_environment_manifest.json first.
+# Only then pin the verified versions; do not guess versions in advance.
+numpy
+pandas
+scipy
+scikit-learn
+torch
+fluids==1.3.1
+PyYAML
+matplotlib
+pytest

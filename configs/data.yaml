@@ -1,0 +1,18 @@
+# Dataset and preprocessing baseline. EDA-dependent settings intentionally remain open.
+sampling_interval_minutes: 15
+window:
+  length: 16 # locked design baseline per current approved framework
+  stride: 1
+  causal: true
+classical_features:
+  - mean
+  - standard_deviation
+  - minimum
+  - maximum
+  - slope
+scaling:
+  method: StandardScaler
+  fit_partition: train_normal_only
+missing_data_policy: OPEN_DECISION_003
+skab_sensor_selection: OPEN_DECISION_002
+skab_split_manifest: OPEN_AFTER_EDA

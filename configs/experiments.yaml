@@ -1,0 +1,50 @@
+models:
+  - isolation_forest
+  - one_class_svm
+  - local_outlier_factor
+  - lstm_autoencoder
+  - gru_autoencoder
+reproducibility:
+  development_seed: 42
+  final_seed_candidates: [42, 43, 44]
+  final_repeat_count: OPEN_DECISION_009
+split:
+  train_val_test_ratio_weymouth_normal_runs: [0.60, 0.20, 0.20]
+  split_unit_weymouth: independent_simulation_run
+  split_unit_skab: experiment_file
+  training_data: normal_windows_only
+thresholds:
+  binary:
+    primary_objective: validation_f1
+    tie_breakers: [higher_recall, lower_false_positive_rate_on_normal_validation]
+  three_class:
+    classes: [normal, early_warning, critical]
+    jointly_optimize_T1_T2: true
+    primary_objective: validation_macro_f1
+    tie_breakers: [higher_critical_recall, fewer_critical_alarms_on_normal_validation]
+    post_phase_policy:
+      decision: OPEN-DECISION-006_P2_APPROVED_IMPLEMENTATION_CHECK_PENDING
+      physical_scenario: anomaly_removed_and_normal_operation_resumes_at_hour_18
+      label_policy: exclude_transition_windows_until_W16_history_clears
+      exclude_from: [three_class_validation_calibration, three_class_class_metrics]
+      recovery_class: false
+      post_history_clear_label: normal
+      window_size_samples: 16
+      sampling_interval_minutes: 15
+      first_expected_eligible_window_end: "22:00"
+      exact_boundary: verify_with_window_end_timeline_check
+      note: "The transition exclusion prevents windows containing pre-reset anomaly history from being labeled normal; do not change OPEN-DECISION-015 lead-time or OPEN-DECISION-017 first-T1-crossing rules."
+  score_direction: higher_means_more_anomalous
+alert_event:
+  primary_detection_event: first_T1_crossing_after_anomaly_onset
+  persistence_filter: none_in_primary_analysis
+
+run_variability:
+  decision: OPEN-DECISION-021_CLOSED_POLICY_IMPLEMENTATION_CHECK_PENDING
+  status: approved_design_choice
+  method: independent_noise_seed_plus_demand_phase_jitter
+  phase_offset_range_hours: [0.0, 24.0]
+  demand_amplitude_fraction: 0.05
+  classification: design-choice_not_literature_derived
+  manifest_fields: [run_id, noise_seed, demand_phase_offset_hours, split]
+  note: Policy approved; verify the generated run manifest before model experiments.

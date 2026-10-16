@@ -1,0 +1,76 @@
+# Mixed-evidence parameter baseline; see docs/parameter_source_audit.md. Not actual BOTAŞ network data.
+model_type: quasi_steady_weymouth_single_pipe
+pipe:
+  length_m: 100000.0
+  diameter_m: 0.75
+pressure:
+  inlet_pa: 9000000.0
+  nominal_outlet_reference_pa: 5000000.0 # Reference operating point; solve actual P2(t).
+gas:
+  specific_gravity: 0.675
+  average_temperature_k: 283.15
+  reference_temperature_k: 288.15
+  reference_pressure_pa: 101325.0
+  efficiency_correction_E: 0.92
+  # Approved v1 simplifying assumption. Fixed Z is not a universal literature constant.
+  compressibility_method: fixed_zavg_0_8065_for_both_segments
+  zavg_fixed: 0.8065
+  limitation: fixed Z simplifies segment compressibility; absolute pressure results may shift with a pressure-dependent Z policy.
+  compressibility_validation: OPEN_DECISION_012_NUMERICAL_VALIDATION_PENDING
+sampling:
+  duration_hours: 24
+  interval_minutes: 15
+normal_demand_variation:
+  amplitude_fraction: 0.05 # Design assumption; sensitivity/physical validation required.
+noise:
+  distribution: gaussian_zero_mean
+  status: approved_provisional_explicit_assumption_pending_sensitivity_validation
+  # Temporary runnable candidates only; NOT measured operator sensor specifications.
+  # Pressure sigma is 0.1% of the 5 MPa nominal reference = 5 kPa absolute.
+  pressure_sigma_pa: 5000.0
+  # Flow sigma is relative to Q0; Q0 itself is produced by the selected Weymouth policy.
+  flow_sigma_fraction_of_nominal_q0: 0.005
+  temperature_sigma_k: 0.1
+  parameter_class: explicit-assumption
+  sensitivity_check:
+    only_change: multiply_all_noise_sigmas
+    multiplier: 2.0
+    status: approved_low_complexity_check_pending_results_OPEN_DECISION_014
+  note: These are temporary explicit assumptions for pipeline plumbing; not literature-supported and not actual operator sensor specifications.
+leak:
+  location_fraction: 0.5
+  fixed_severity_fractions: [0.02, 0.05, 0.10]
+  gradual_max_fraction: 0.10
+  ramp_duration_hours: 6
+sensor_bias:
+  pressure_fraction_of_nominal_reference: 0.005
+sensor_drift:
+  pressure_fraction_of_nominal_reference_max: 0.01
+  ramp_duration_hours: 6
+post_phase:
+  start_hour: 18
+  end_hour: 24
+  physical_policy: P2_anomaly_removed_and_normal_operation_resumes
+  leak:
+    at_start: set_Q_leak_to_zero
+    post_state: normal_mass_balance_Qin_equals_Qout
+  sensor_drift:
+    at_start: remove_drift_injection_and_reset_offset_to_zero
+    interpretation: sensor_recalibrated_at_post_phase_start
+  dynamics: instantaneous_return_under_quasi_steady_model
+  classification: approved_design_choice_not_transient_physics
+  limitation: no transient recovery dynamics are simulated in v1
+model_flow_representation: approved_pilot_candidate_Qin_and_Qout_observed_channels
+model_flow_candidates:
+  - Qin_and_Qout_observed_channels
+  - Qout_plus_pressure_channels
+  - derived_Qin_minus_Qout_imbalance
+note_model_inputs: Approved pilot candidate uses Qin and Qout as separate observed channels. Exclude Q_leak, anomaly severity, scenario ID, and all ground-truth-only fields from model inputs. OPEN-DECISION-016 remains open pending the controlled validation pilot; do not add Qin-Qout as a model feature automatically.
+
+# Approved run-to-run design choice: independent noise seed plus demand-profile phase jitter.
+run_variability:
+  status: approved_design_choice_pending_manifest_implementation_check
+  method: independent_noise_seed_plus_demand_phase_jitter_0_to_24_hours
+  demand_amplitude_fraction: 0.05
+  demand_phase_jitter_class: design-choice
+  manifest_fields: [run_id, noise_seed, demand_phase_offset_hours, split]
